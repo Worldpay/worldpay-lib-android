@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">WorldFood</string>
+    <string name="title_activity_splash_screen">WorldFood</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_start">StartActivity</string>
+    <string name="title_activity_details">Details</string>
+    <string name="title_activity_add_card">Add Card</string>
+    <string name="title_activity_success">Success</string>
+    <string name="paymentMethod">PAYMENT METHOD</string>
+    <string name="addCardButton">Add Card</string>
+    <string name="purchaseButton">Confirm Purchase</string>
+    <string name="storedCard">Stored Cards</string>
+    <string name="postCode">Postcode</string>
+    <string name="city">City</string>
+    <string name="address">Address</string>
+    <string name="quantity">QUANTITY</string>
+    <string name="dish">DISH</string>
+    <string name="price">PRICE</string>
+    <string name="delivery">DELIVERY ADDRESS</string>
+    <string name="thank">Thank You!</string>
+    <string name="order">Your Order Has Been successfully completed</string>
+    <string name="deliver">We will deliver</string>
+    <string name="minutes">your order in the next 30 minutes</string>
+
+</resources>

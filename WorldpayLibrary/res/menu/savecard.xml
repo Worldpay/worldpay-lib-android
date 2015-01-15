@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"    >
+
+    <item
+        android:id="@+id/action_save"
+        android:showAsAction="always|withText"
+        android:actionViewClass="android.widget.Button" 
+        android:visible="true" 
+        android:title="Save card" />
+        
+</menu>
