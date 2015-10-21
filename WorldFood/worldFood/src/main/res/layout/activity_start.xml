@@ -1,0 +1,54 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top"
+        android:orientation="vertical">
+
+        <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="fill_parent"
+        android:layout_height="150dp">
+    </android.support.v4.view.ViewPager>
+
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </ListView>
+
+        <!--
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:layout_below="@android:id/list"
+        android:background="#919191"/>
+ -->
+    </LinearLayout>
+
+
+    <Button
+        android:id="@+id/settings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@android:color/transparent"
+        android:gravity="center"
+        android:text="Settings"
+        android:textColor="#f01e14"
+        />
+
+</FrameLayout>
+
+
+
+
+
+
