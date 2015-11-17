@@ -2,12 +2,11 @@ package com.worldpay;
 
 final class Constants {
 
-    /**
-     * World pay url and version
-     */
+    /** Worldpay API version. */
     protected static final String API_VERSION = "v1";
+    /** Worldpay API URL. */
     protected static final String API_URL = "https://api.worldpay.com/" + API_VERSION + "/";
-
-    protected static final String API_URL_TOKEN_REQUEST = API_URL + "tokens";
+    /** Worldpay Tokens API URL. */
+    protected static final String API_URL_TOKENS = API_URL + "tokens";
 
 }

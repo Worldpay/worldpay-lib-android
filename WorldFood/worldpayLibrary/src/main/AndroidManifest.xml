@@ -1,18 +1,14 @@
-<manifest
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.worldpay"
-    xmlns:android="http://schemas.android.com/apk/res/android"
     android:versionCode="1"
     android:versionName="1.0">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <uses-sdk
-        android:minSdkVersion="16"
-        android:targetSdkVersion="19" />
-
     <application
         android:allowBackup="true"
+        android:fullBackupContent="@xml/backup"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"></application>
+        android:theme="@style/AppTheme" />
 
 </manifest>

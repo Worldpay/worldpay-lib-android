@@ -5,7 +5,6 @@ package com.worldpay;
  * {@link WorldPay#createTokenAsyncTask(android.content.Context, Card, WorldPayResponse)} or
  * {@link WorldPay#createTokenAsyncTask(android.content.Context, ResponseCard, WorldPayResponse)}.
  *
- * @author Sotiris Chatzianagnostou - sotcha@arx.net
  * @see ResponseCard
  * @see ResponseError
  * @see WorldPayError
@@ -14,9 +13,9 @@ public interface WorldPayResponse {
     /**
      * The transaction was successful.<br>
      *
-     * @param responseCard Contains informations of the card responded from woldpay server.
+     * @param response Contains information of the card responded from WorldPay server.
      */
-    void onSuccess(ResponseCard responseCard);
+    void onSuccess(ResponseCard response);
 
     /**
      * Worldpay server responded with an error.
@@ -28,7 +27,7 @@ public interface WorldPayResponse {
     /**
      * A generic error occured
      *
-     * @param worldPayError
+     * @param worldPayError Error details
      */
     void onError(WorldPayError worldPayError);
 

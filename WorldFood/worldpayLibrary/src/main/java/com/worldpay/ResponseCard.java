@@ -4,37 +4,28 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * Contains response from the server with card details.
- *
- * @author Sotiris Chatzianagnostou - sotcha@arx.net
  */
-
 public class ResponseCard implements Serializable {
+
     private static final long serialVersionUID = -8273784902723750008L;
 
     private String token;
     private boolean reusable;
-
     private String type;
     private String name;
     private String expiryMonth;
     private String expiryYear;
     private String cardType;
     private String maskedCardNumber;
-
     private String cardSchemeType;
     private String cardSchemeName;
     private String cardIssuer;
     private String countryCode;
     private String cardClass;
     private String prepaid;
-
-    private Map<String, Locale> localeMap;
 
     /**
      * Default constructor
@@ -67,11 +58,11 @@ public class ResponseCard implements Serializable {
      * @param jsonString
      * @throws JSONException
      */
-
     protected void parseJsonString(String jsonString) throws JSONException {
         JSONObject mainObject = new JSONObject(jsonString);
         token = mainObject.optString("token");
         reusable = mainObject.optBoolean("reusable");
+
         JSONObject paymentMethodJSONObject = mainObject.optJSONObject("paymentMethod");
         type = paymentMethodJSONObject.optString("type");
         name = paymentMethodJSONObject.optString("name");
@@ -79,20 +70,12 @@ public class ResponseCard implements Serializable {
         expiryYear = paymentMethodJSONObject.optString("expiryYear");
         cardType = paymentMethodJSONObject.optString("cardType");
         maskedCardNumber = paymentMethodJSONObject.optString("maskedCardNumber");
-
-
         cardSchemeType = paymentMethodJSONObject.optString("cardSchemeType");
         cardSchemeName = paymentMethodJSONObject.optString("cardSchemeName");
         cardIssuer = paymentMethodJSONObject.optString("cardIssuer");
         countryCode = paymentMethodJSONObject.optString("countryCode");
-        if (!countryCode.equals("XXX")) {
-            initCountryCodeMapping();
-            countryCode = iso3CountryCodeToIso2CountryCode(countryCode);
-        }
         cardClass = paymentMethodJSONObject.optString("cardClass");
         prepaid = paymentMethodJSONObject.optString("prepaid");
-
-
     }
 
     public String getToken() {
@@ -197,20 +180,6 @@ public class ResponseCard implements Serializable {
                 + " cardClass=" + cardClass
                 + " prepaid=" + prepaid
                 ;
-    }
-
-
-    private void initCountryCodeMapping() {
-        String[] countries = Locale.getISOCountries();
-        localeMap = new HashMap<String, Locale>(countries.length);
-        for (String country : countries) {
-            Locale locale = new Locale("", country);
-            localeMap.put(locale.getISO3Country().toUpperCase(), locale);
-        }
-    }
-
-    private String iso3CountryCodeToIso2CountryCode(String iso3CountryCode) {
-        return localeMap.get(iso3CountryCode).getCountry();
     }
 
 }

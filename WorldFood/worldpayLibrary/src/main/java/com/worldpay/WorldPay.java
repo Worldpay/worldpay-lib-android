@@ -11,6 +11,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import static android.Manifest.permission.ACCESS_NETWORK_STATE;
+import static android.content.Context.CONNECTIVITY_SERVICE;
+import static com.worldpay.WorldPayError.ERROR_NO_NETWORK;
+
 /**
  * WorldPay main class based on singleton pattern.
  * <p>
@@ -30,30 +34,30 @@ import java.io.IOException;
  * {@link WorldPay#setDebug(boolean, String)}.</li>
  * </ul>
  * </p>
- * <p>
+ * <p/>
  * <h3>Usage</h3>
- * <p>
+ * <p/>
  * <ol>
  * Steps:
- * <p>
+ * <p/>
  * <li>Set your client key :<br>
- * <p>
+ * <p/>
  * <pre>
  * WorldPay.getInstance().setClientKey(YOUR_CLIENT_KEY);
  * </pre>
- * <p>
+ * <p/>
  * </li>
- * <p>
+ * <p/>
  * <li>Create a card and set data.<br>
- * <p>
+ * <p/>
  * <pre>
  * Card card = new Card();
- * card.setHolderName(name).setCardNumber(cNumber).setCvc(cvc).setExpiryYear(expYear).setExpriryMonth(expMonth);
+ * card.setHolderName(name).setCardNumber(cNumber).setCvc(cvc).setExpiryYear(expYear).setExpiryMonth(expMonth);
  * </pre>
- * <p>
+ * <p/>
  * </li>
  * <li>Validate the card :<br>
- * <p>
+ * <p/>
  * <pre>
  * CardValidationError validate = card.validate();
  *
@@ -63,15 +67,15 @@ import java.io.IOException;
  * 	//everything is ok, you can continue
  * }
  * </pre>
- * <p>
+ * <p/>
  * If validation errors exist, check {@link CardValidationError} class for more information.</li>
  * <li>Create and execute {@link #createTokenAsyncTask(Context, Card, WorldPayResponse)} in order to
  * create an {@link AsyncTask}, which executes the transaction with WorldPay servers and returns the
  * response asynchronously to a callback interface. <br>
  * <br>
- * <p>
+ * <p/>
  * Implement {@link WorldPayResponse} interface, to handle response from the WorldPay. <br>
- * <p>
+ * <p/>
  * <pre>
  * AsyncTask&lt;Void, Void, ServerResponse&gt; createTokenAsyncTask = worldPay.createTokenAsyncTask(this, card, new WorldPayResponse() {
  *
@@ -92,14 +96,17 @@ import java.io.IOException;
  *
  * });
  * </pre>
- * <p>
+ * <p/>
  * </li>
  * </ol>
  *
- * @author Sotiris Chatzianagnostou - sotcha@arx.net
  * @see Card
  * @see CardValidationError
+ * @see AlternativePaymentMethod
+ * @see AlternativePaymentMethodToken
+ * @see AlternativePaymentMethodValidationError
  * @see WorldPayResponse
+ * @see WorldPayApmResponse
  * @see ResponseCard
  * @see ResponseError
  * @see WorldPayError
@@ -115,17 +122,13 @@ public class WorldPay {
      */
     public static final String VERSION = "0.1";
 
-    /**
-     * The static instance.
-     */
+    private static final String REUSABLE = "reusable";
+    private static final String CLIENT_KEY = "clientKey";
+    private static final String PAYMENT_METHOD = "paymentMethod";
+
     private static WorldPay instance;
-
-    //store here the validation type
     private String clientKey;
-
-    // if the token is reusable
     private boolean reusable = false;
-
 
     private WorldPay() {
 
@@ -139,7 +142,6 @@ public class WorldPay {
     public static WorldPay getInstance() {
         if (instance == null) {
             instance = new WorldPay();
-
         }
         return instance;
     }
@@ -168,29 +170,33 @@ public class WorldPay {
     }
 
     /**
-     * Asynchronously creates token
+     * Asynchronously creates a {@link ResponseCard} token.
      *
-     * @param context
-     * @param card
-     * @param worldPayResponseCallback
+     * @param context  The {@link Context}.
+     * @param card     The {@link Card} to tokenize.
+     * @param callback The {@link WorldPayResponse} callback.
      * @return {@link AsyncTask}
      */
-    public AsyncTask<Void, Void, HttpServerResponse> createTokenAsyncTask(Context context, final Card card,
-                                                                          final WorldPayResponse worldPayResponseCallback) {
-        return createTokenAsyncTask(context, card, null, worldPayResponseCallback);
+    public AsyncTask<Void, Void, HttpServerResponse> createTokenAsyncTask(final Context context,
+                                                                          final Card card,
+                                                                          final WorldPayResponse callback) {
+        return createTokenAsyncTask(context, card, null, callback);
     }
 
-    public AsyncTask<Void, Void, HttpServerResponse> createTokenAsyncTask(Context context, final ResponseCard responseCard,
-                                                                          final WorldPayResponse worldPayResponseCallback) {
-        return createTokenAsyncTask(context, null, responseCard, worldPayResponseCallback);
-    }
-
-    private AsyncTask<Void, Void, HttpServerResponse> createTokenAsyncTask(Context context, final Card card,
-                                                                           final ResponseCard responseCard, final WorldPayResponse worldPayResponseCallback) {
+    /**
+     * Asynchronously creates an {@link AlternativePaymentMethod} token.
+     *
+     * @param context                  The {@link Context}.
+     * @param alternativePaymentMethod The {@link AlternativePaymentMethod} to tokenize.
+     * @param callback                 The {@link WorldPayApmResponse} callback.
+     * @return {@link AsyncTask}
+     */
+    public AsyncTask<Void, Void, HttpServerResponse> createTokenAsyncTask(final Context context,
+                                                                          final AlternativePaymentMethod alternativePaymentMethod,
+                                                                          final WorldPayApmResponse callback) {
         final WorldPayError worldPayError = new WorldPayError();
-
         if (!isNetworkConnected(context)) {
-            worldPayError.setError(WorldPayError.ERROR_NO_NETWORK, "There is no network connectivity");
+            worldPayError.setError(ERROR_NO_NETWORK, "There is no network connectivity");
             return null;
         }
 
@@ -198,16 +204,15 @@ public class WorldPay {
             @Override
             protected HttpServerResponse doInBackground(Void... params) {
                 DebugLogger.d("createTokenAsyncTask [start] ...");
-
                 try {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("reusable", reusable);
-                    jsonObject.put("clientKey", clientKey);
-                    jsonObject.put("paymentMethod", card.getAsJSONObject());
+                    final JSONObject jsonObject = new JSONObject();
+                    jsonObject.put(REUSABLE, reusable);
+                    jsonObject.put(CLIENT_KEY, clientKey);
+                    jsonObject.put(PAYMENT_METHOD, alternativePaymentMethod.getAsJSONObject());
 
                     DebugLogger.d("Created req: " + jsonObject.toString());
 
-                    return WorldPayHttp.getInstance().executeRequest(jsonObject.toString());
+                    return WorldPayHttp.getInstance().createToken(jsonObject.toString());
                 } catch (JSONException e) {
                     DebugLogger.e(e);
                     worldPayError.setError(WorldPayError.ERROR_CREATING_REQUEST_JSON,
@@ -216,7 +221,92 @@ public class WorldPay {
                     DebugLogger.e(e);
                     worldPayError.setError(WorldPayError.ERROR_RESPONSE_CONNECTION, "Connection error : " + e.getMessage());
                 }
+                return null;
+            }
 
+            @Override
+            protected void onPostExecute(final HttpServerResponse serverResponse) {
+                if (serverResponse == null) {
+                    if (worldPayError.getCode() == 0) {
+                        worldPayError.setError(WorldPayError.ERROR_RESPONSE_UNKNOWN, "Error while trying to get response.");
+                    }
+                    callback.onError(worldPayError);
+                    return;
+                }
+                if (serverResponse.getStatusCode() == 200) {
+                    try {
+                        final AlternativePaymentMethodToken alternativePaymentMethodToken = AlternativePaymentMethodToken.valueOf(serverResponse.getResponse());
+                        callback.onSuccess(alternativePaymentMethodToken);
+                    } catch (JSONException e) {
+                        DebugLogger.e(e);
+                        worldPayError.setError(WorldPayError.ERROR_RESPONSE_MALFORMED_JSON, "Json parsing failed.");
+                        callback.onError(worldPayError);
+                    }
+                } else {
+                    ResponseError responseError = new ResponseError();
+                    String responseString = serverResponse.getResponse();
+                    try {
+                        if (responseString != null) {
+                            responseError.parseJsonString(responseString);
+                        } else {
+                            responseError.setHttpStatusCode(serverResponse.getStatusCode());
+                        }
+                        callback.onResponseError(responseError);
+                    } catch (JSONException e) {
+                        DebugLogger.e(e);
+                        worldPayError.setError(WorldPayError.ERROR_RESPONSE_MALFORMED_JSON, "Json parsing failed.");
+                        callback.onError(worldPayError);
+                    }
+                }
+            }
+        };
+    }
+
+    /**
+     * Asynchronously creates a {@link ResponseCard} token.
+     *
+     * @param context      The {@link Context}.
+     * @param responseCard The {@link ResponseCard} to tokenize.
+     * @param callback     The {@link WorldPayResponse} callback.
+     * @return {@link AsyncTask}
+     */
+    public AsyncTask<Void, Void, HttpServerResponse> createTokenAsyncTask(final Context context,
+                                                                          final ResponseCard responseCard,
+                                                                          final WorldPayResponse callback) {
+        return createTokenAsyncTask(context, null, responseCard, callback);
+    }
+
+    private AsyncTask<Void, Void, HttpServerResponse> createTokenAsyncTask(final Context context,
+                                                                           final Card card,
+                                                                           final ResponseCard responseCard,
+                                                                           final WorldPayResponse callback) {
+        final WorldPayError worldPayError = new WorldPayError();
+        if (!isNetworkConnected(context)) {
+            worldPayError.setError(ERROR_NO_NETWORK, "There is no network connectivity");
+            return null;
+        }
+
+        return new AsyncTask<Void, Void, HttpServerResponse>() {
+            @Override
+            protected HttpServerResponse doInBackground(Void... params) {
+                DebugLogger.d("createTokenAsyncTask [start] ...");
+                try {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put(REUSABLE, reusable);
+                    jsonObject.put(CLIENT_KEY, clientKey);
+                    jsonObject.put(PAYMENT_METHOD, card.getAsJSONObject());
+
+                    DebugLogger.d("Created req: " + jsonObject.toString());
+
+                    return WorldPayHttp.getInstance().createToken(jsonObject.toString());
+                } catch (JSONException e) {
+                    DebugLogger.e(e);
+                    worldPayError.setError(WorldPayError.ERROR_CREATING_REQUEST_JSON,
+                            "Error while trying to create the request :" + e.getMessage());
+                } catch (IllegalStateException | IOException e) {
+                    DebugLogger.e(e);
+                    worldPayError.setError(WorldPayError.ERROR_RESPONSE_CONNECTION, "Connection error : " + e.getMessage());
+                }
                 return null;
             }
 
@@ -226,42 +316,35 @@ public class WorldPay {
                     if (worldPayError.getCode() == 0) {
                         worldPayError.setError(WorldPayError.ERROR_RESPONSE_UNKNOWN, "Error while trying to get response.");
                     }
-                    worldPayResponseCallback.onError(worldPayError);
+                    callback.onError(worldPayError);
                     return;
                 }
-
                 if (serverResponse.getStatusCode() == 200) {
-                    //success
                     ResponseCard responseCard = new ResponseCard();
                     try {
                         responseCard.parseJsonString(serverResponse.getResponse());
-                        worldPayResponseCallback.onSuccess(responseCard);
+                        callback.onSuccess(responseCard);
 
                     } catch (JSONException e) {
                         DebugLogger.e(e);
-
                         worldPayError.setError(WorldPayError.ERROR_RESPONSE_MALFORMED_JSON, "Json parsing failed.");
-                        worldPayResponseCallback.onError(worldPayError);
+                        callback.onError(worldPayError);
                     }
                 } else {
-                    //response code is not 200
                     ResponseError responseError = new ResponseError();
 
                     String responseString = serverResponse.getResponse();
-
                     try {
                         if (responseString != null) {
                             responseError.parseJsonString(responseString);
                         } else {
-                            //we add only the http code
                             responseError.setHttpStatusCode(serverResponse.getStatusCode());
                         }
-
-                        worldPayResponseCallback.onResponseError(responseError);
+                        callback.onResponseError(responseError);
                     } catch (JSONException e) {
                         DebugLogger.e(e);
                         worldPayError.setError(WorldPayError.ERROR_RESPONSE_MALFORMED_JSON, "Json parsing failed.");
-                        worldPayResponseCallback.onError(worldPayError);
+                        callback.onError(worldPayError);
                     }
                 }
             }
@@ -273,20 +356,22 @@ public class WorldPay {
      *
      * @param context
      * @param reusableToken
-     * @param worldPayResponseCallback
+     * @param callback
      * @return {@link AsyncTask}
      */
-    public AsyncTask<Void, Void, HttpServerResponse> reuseTokenAsyncTask(Context context, final ReusableToken reusableToken,
-                                                                         final WorldPayResponseReusableToken worldPayResponseCallback) {
-        return reuseTokenAsyncTask(context, reusableToken, null, worldPayResponseCallback);
+    public AsyncTask<Void, Void, HttpServerResponse> reuseTokenAsyncTask(final Context context,
+                                                                         final ReusableToken reusableToken,
+                                                                         final WorldPayResponseReusableToken callback) {
+        return reuseTokenAsyncTask(context, reusableToken, null, callback);
     }
 
-    private AsyncTask<Void, Void, HttpServerResponse> reuseTokenAsyncTask(Context context, final ReusableToken reusableToken,
-                                                                          final ResponseCard responseCard, final WorldPayResponseReusableToken worldPayResponseCallback) {
+    private AsyncTask<Void, Void, HttpServerResponse> reuseTokenAsyncTask(final Context context,
+                                                                          final ReusableToken reusableToken,
+                                                                          final ResponseCard responseCard,
+                                                                          final WorldPayResponseReusableToken callback) {
         final WorldPayError worldPayError = new WorldPayError();
-
         if (!isNetworkConnected(context)) {
-            worldPayError.setError(WorldPayError.ERROR_NO_NETWORK, "There is no network connectivity");
+            worldPayError.setError(ERROR_NO_NETWORK, "There is no network connectivity");
             return null;
         }
 
@@ -298,7 +383,7 @@ public class WorldPay {
                 try {
                     JSONObject jsonObject = reusableToken.getAsJSONObject();
 
-                    return WorldPayHttp.getInstance().executeReuseableRequest(reusableToken.getToken(), jsonObject.toString());
+                    return WorldPayHttp.getInstance().reuseToken(reusableToken.getToken(), jsonObject.toString());
                 } catch (JSONException e) {
                     DebugLogger.e(e);
                     worldPayError.setError(WorldPayError.ERROR_CREATING_REQUEST_JSON,
@@ -307,7 +392,6 @@ public class WorldPay {
                     DebugLogger.e(e);
                     worldPayError.setError(WorldPayError.ERROR_RESPONSE_CONNECTION, "Connection error : " + e.getMessage());
                 }
-
                 return null;
             }
 
@@ -317,39 +401,31 @@ public class WorldPay {
                     if (worldPayError.getCode() == 0) {
                         worldPayError.setError(WorldPayError.ERROR_RESPONSE_UNKNOWN, "Error while trying to get response.");
                     }
-                    worldPayResponseCallback.onError(worldPayError);
+                    callback.onError(worldPayError);
                     return;
                 }
                 DebugLogger.d("serverResponse " + serverResponse.getStatusCode());
                 if (serverResponse.getStatusCode() == 200) {
-                    worldPayResponseCallback.onSuccess();
-                    //success
-
+                    callback.onSuccess();
                 } else {
-                    //response code is not 200
                     ResponseError responseError = new ResponseError();
 
                     String responseString = serverResponse.getResponse();
-
                     try {
                         if (responseString != null) {
                             responseError.parseJsonString(responseString);
                         } else {
-                            //we add only the http code
                             responseError.setHttpStatusCode(serverResponse.getStatusCode());
                         }
-
-                        worldPayResponseCallback.onResponseError(responseError);
+                        callback.onResponseError(responseError);
                     } catch (JSONException e) {
                         DebugLogger.e(e);
                         worldPayError.setError(WorldPayError.ERROR_RESPONSE_MALFORMED_JSON, "Json parsing failed.");
-                        worldPayResponseCallback.onError(worldPayError);
+                        callback.onError(worldPayError);
                     }
                 }
             }
-
         };
-
     }
 
     public String getClientKey() {
@@ -387,14 +463,14 @@ public class WorldPay {
     private boolean isNetworkConnected(Context context) {
         //check for connectivity permission
         PackageManager pm = context.getPackageManager();
-        int hasPerm = pm.checkPermission(android.Manifest.permission.ACCESS_NETWORK_STATE, context.getPackageName());
+        int hasPerm = pm.checkPermission(ACCESS_NETWORK_STATE, context.getPackageName());
         if (hasPerm != PackageManager.PERMISSION_GRANTED) {
             //we do not know so return true
             DebugLogger.d("There is no connectivity permission.");
             return true;
         }
 
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
     }

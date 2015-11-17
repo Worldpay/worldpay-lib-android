@@ -6,10 +6,17 @@ import org.apache.http.message.BasicHeader;
 
 import java.io.IOException;
 
+import static com.worldpay.Constants.API_URL_TOKENS;
+import static com.worldpay.HttpClientUtility.HTTP_METHOD.POST;
+import static com.worldpay.HttpClientUtility.HTTP_METHOD.PUT;
+import static com.worldpay.HttpClientUtility.httpEntityRequest;
+
 final class WorldPayHttp {
-    //singleton instance
+
+    private static final char SEMI_COLON = ';';
     private static WorldPayHttp instance;
-    private String customUserAgentHeader;
+
+    private String worldPayUserAgent;
 
     private WorldPayHttp() {
 
@@ -22,62 +29,56 @@ final class WorldPayHttp {
         return instance;
     }
 
-    public HttpServerResponse executeRequest(String data) throws IllegalStateException, IOException {
-        //		create http error codes
-
-        BasicHeader[] createHeaders = createHeaders();
-        return HttpClientUtility.httpEntityRequest(HttpClientUtility.HTTP_METHOD.POST, Constants.API_URL_TOKEN_REQUEST, data,
-                createHeaders);
-
+    public HttpServerResponse createToken(final String data) throws IllegalStateException, IOException {
+        return httpEntityRequest(POST, API_URL_TOKENS, data, getHeaders());
     }
 
-    public HttpServerResponse executeReuseableRequest(String token, String data) throws IllegalStateException, IOException {
-        //		create http error codes
-
-        BasicHeader[] createHeaders = createHeaders();
-        return HttpClientUtility.httpEntityRequest(HttpClientUtility.HTTP_METHOD.PUT, Constants.API_URL_TOKEN_REQUEST + "/" + token, data,
-                createHeaders);
-
+    public HttpServerResponse reuseToken(final String token, final String data) throws IllegalStateException, IOException {
+        return httpEntityRequest(PUT, API_URL_TOKENS + "/" + token, data, getHeaders());
     }
 
-    private String getCustomUserAgent() {
-        //X-wp-client-user-agent with following properties
-        //
-        //    os.name
-        //    os.version
-        //    os.arch
+    private BasicHeader[] getHeaders() {
+        return new BasicHeader[]{
+                new BasicHeader("Content-type", "application/json"),
+                getCustomUserAgent()
+        };
+    }
 
-        //    lib.version
-        //    api.version
-        //    lang (java, php, c# etc)
-        //    owner (would always be "world pay”)
-        if (customUserAgentHeader == null) {
-            StringBuilder userAgent = new StringBuilder();
-
+    /**
+     * Create the WorldPay custom user agent HTTP header (X-wp-client-user-agent).
+     * <p/>
+     * Requires the following information:
+     * <ol>
+     * <li>os.name</li>
+     * <li>os.version</li>
+     * <li>os.arch</li>
+     * <li>lang.version (jvm version, php version)</li>
+     * <li>lib.version</li>
+     * <li>api.version</li>
+     * <li>lang (java, php, c# etc)</li>
+     * <li>owner (would always be "world pay”)</li>
+     * </ol>
+     *
+     * @return The 'X-wp-client-user-agent' header.
+     */
+    private BasicHeader getCustomUserAgent() {
+        if (worldPayUserAgent == null) {
+            final StringBuilder userAgent = new StringBuilder();
             String systemArch = System.getProperty("os.arch");
             if (systemArch == null) {
                 systemArch = "Unknown arch";
             }
+            userAgent.append("android;")
+                    .append(Build.VERSION.SDK_INT).append(SEMI_COLON)
+                    .append(systemArch).append(SEMI_COLON)
+                    .append(Build.VERSION.RELEASE).append(SEMI_COLON)
+                    .append(WorldPay.VERSION).append(SEMI_COLON)
+                    .append(Constants.API_VERSION).append(SEMI_COLON)
+                    .append("android").append(SEMI_COLON)
+                    .append("worldpay").append(SEMI_COLON);
 
-            userAgent.append("android;")//os name
-                    .append(Build.VERSION.SDK_INT).append(';')// os version
-                    .append(systemArch).append(';')//
-                    .append(Build.VERSION.RELEASE).append(';')//    lang.version e.g jvm version, php version
-
-                    .append(WorldPay.VERSION).append(';')//lib version
-                    .append(Constants.API_VERSION).append(';')//api version
-                    .append("java").append(';')//lang
-                    .append("world pay").append(';');//owner
-
-
-            customUserAgentHeader = userAgent.toString();
+            worldPayUserAgent = userAgent.toString();
         }
-        return customUserAgentHeader;
+        return new BasicHeader("X-wp-client-user-agent", worldPayUserAgent);
     }
-
-    private BasicHeader[] createHeaders() {
-        return new BasicHeader[]{//
-                new BasicHeader("Content-type", "application/json"), new BasicHeader("X-wp-client-user-agent", getCustomUserAgent()),};
-    }
-
 }

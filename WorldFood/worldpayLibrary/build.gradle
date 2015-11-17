@@ -1,15 +1,15 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "$androidBuildToolsVersion"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 19
-
-
+        targetSdkVersion 23
     }
+
+    useLibrary 'org.apache.http.legacy'
 
     buildTypes {
         release {
@@ -17,6 +17,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+
     compileOptions {
         targetCompatibility JavaVersion.VERSION_1_7
         sourceCompatibility JavaVersion.VERSION_1_7
@@ -24,5 +25,5 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:19.1.0'
+    compile "com.android.support:support-v4:$androidSupportVersion"
 }

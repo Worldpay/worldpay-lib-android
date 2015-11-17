@@ -1,15 +1,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <ImageView
-        android:id="@+id/imageView1"
+        android:id="@+id/splash_screen_logo"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-		android:layout_gravity="center"
+        android:layout_gravity="center"
+        android:contentDescription="@string/cd_worldfood_logo"
         android:src="@drawable/loxodrome" />
-
 </LinearLayout>

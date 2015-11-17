@@ -19,7 +19,6 @@ import java.util.regex.Pattern;
  * data.
  * </p>
  *
- * @author Sotiris Chatzianagnostou - sotcha@arx.net
  * @see CardValidationError
  */
 public class Card implements Serializable {
@@ -36,21 +35,18 @@ public class Card implements Serializable {
     private static final String PATTERN_ADVANCED_CARD_NUMBER = "[^0-9-\\s]";
     private static final String PATTERN_BASIC_CARD_NUMBER = "[^0-9]+";
     private static final String PATTERN_CVC_NUMBER = "[^0-9]+";
-    private static final String PATTERN_CARD_HOLDER_NAME = "^[a-zA-Z()]+$";
-    // the validation type, it is static so it is the same for all cards
     private static int validationType = VALIDATION_TYPE_ADVANCED;
 
     private String holderName;
-    private String expriryMonth;
+    private String expiryMonth;
     private String expiryYear;
     private String cardNumber;
 
     private String cvc;
 
-    public Card(String name, String expriryMonth, String expiryYear,
-                String cardNumber, String cvc) {
+    public Card(String name, String expiryMonth, String expiryYear, String cardNumber, String cvc) {
         this.holderName = name;
-        this.expriryMonth = expriryMonth;
+        this.expiryMonth = expiryMonth;
         this.expiryYear = expiryYear;
         this.cardNumber = cardNumber;
         this.cvc = cvc;
@@ -68,7 +64,7 @@ public class Card implements Serializable {
      * </ul>
      * The default value is {@link #VALIDATION_TYPE_ADVANCED}.
      *
-     * @param validationType
+     * @param validationType Type of validation.
      * @throws IllegalArgumentException
      */
 
@@ -108,8 +104,26 @@ public class Card implements Serializable {
         return this;
     }
 
-    public Card setExpriryMonth(String expriryMonth) {
-        this.expriryMonth = expriryMonth;
+    /**
+     * Set the expiry month.
+     *
+     * @param expiryMonth Month of card expiry.
+     * @return {@code this}
+     * @see #setExpiryMonth(String)
+     */
+    @Deprecated
+    public Card setExpriryMonth(String expiryMonth) {
+        return setExpiryMonth(expiryMonth);
+    }
+
+    /**
+     * Set the expiry month.
+     *
+     * @param expiryMonth Month of card expiry.
+     * @return {@code this}
+     */
+    public Card setExpiryMonth(String expiryMonth) {
+        this.expiryMonth = expiryMonth;
         return this;
     }
 
@@ -140,7 +154,7 @@ public class Card implements Serializable {
 
         jsonObject.put("type", "Card");
         jsonObject.put("name", holderName);
-        jsonObject.put("expiryMonth", expriryMonth);
+        jsonObject.put("expiryMonth", expiryMonth);
         jsonObject.put("expiryYear", expiryYear);
         jsonObject.put("cardNumber", cardNumber);
         jsonObject.put("cvc", cvc);
@@ -194,20 +208,13 @@ public class Card implements Serializable {
      */
 
     private boolean validateCardHolderName() {
-        holderName = holderName.replace(" ", "");
-        // Create a Pattern object
-        Pattern r = Pattern.compile(PATTERN_CARD_HOLDER_NAME);
-
-        // Now create matcher object.
-        Matcher m = r.matcher(holderName);
-        return m.find();
+        return !holderName.trim().isEmpty();
     }
 
     private boolean validateCardNumber() {
         if (validationType == VALIDATION_TYPE_ADVANCED) {
             return validateCardNumberAdvanced();
         } else {
-            // then is basic
             return validateCardNumberBasic();
         }
     }
@@ -252,7 +259,7 @@ public class Card implements Serializable {
                     x = Character.getNumericValue(g);
                     d = x;
 
-                    if (check == true) {
+                    if (check) {
                         d = d * 2;
                         if (d > 9) {
                             d = d - 9;
@@ -265,9 +272,7 @@ public class Card implements Serializable {
                     }
 
                     check = !check;
-                } else {
                 }
-
             }
 
             int sum = -1;
@@ -286,10 +291,8 @@ public class Card implements Serializable {
      * Returns true if the validation of the number of the card is correct Basic
      * Validation
      *
-     * @param cardNumber the number of the card that is going to be checked
      * @return true if the the number of the card is correct
      */
-
     private boolean validateCardNumberBasic() {
 
         if (cardNumber == null || cardNumber.length() == 0) {
@@ -311,28 +314,23 @@ public class Card implements Serializable {
      * Returns true if the validation of the month and year of the card is
      * correct Expiry Validation
      *
-     * @param month the month the card expires
-     * @param year  the year the card expires
      * @return true if the the month and year are correct
      */
-
     private boolean validateExpiry() {
 
-        if ((expriryMonth == null || expriryMonth.equals(""))
+        if ((expiryMonth == null || expiryMonth.equals(""))
                 || (expiryYear == null || expiryYear.equals(""))) {
             return false;
-        } else if (expriryMonth.length() > 2 || expiryYear.length() != 4) {
+        } else if (expiryMonth.length() > 2 || expiryYear.length() != 4) {
             return false;
         } else {
-
             // TODO check if that is right - changes the original value
-
             Calendar c = Calendar.getInstance();
             int currentYr = c.get(Calendar.YEAR);
             int currentMth = c.get(Calendar.MONTH);
 
             int expYear = Integer.parseInt(expiryYear);
-            int expMonth = Integer.parseInt(expriryMonth);
+            int expMonth = Integer.parseInt(expiryMonth);
 
             if ((Double.isNaN(currentYr)) || (Double.isNaN(currentMth))) {
 

@@ -15,6 +15,7 @@
     <string name="expiryEdit">XX/XXXX</string>
     <string name="cvcEdit">CVC</string>
     <string name="saveCard">\u00A0 Save card</string>
+    <string name="saveApm">\u00A0 Save APM</string>
 
     <string name="cardDetails">Card details</string>
 
@@ -26,4 +27,12 @@
     <string name="cardNameError">Name on card is not valid</string>
     <string name="cardNumberError">Card Number is not valid</string>
 
+    <string name="apm_details">APM details</string>
+    <string name="apmType">APM Type</string>
+    <string name="nameError">Name not valid</string>
+    <string name="apmNameError">APM name not valid</string>
+    <string name="apmShopperCountryError">APM shopper country code not valid</string>
+    <string name="countryCode">Country Code</string>
+    <string name="no_network">There is no network connectivity</string>
+    <string name="paypal">paypal</string>
 </resources>

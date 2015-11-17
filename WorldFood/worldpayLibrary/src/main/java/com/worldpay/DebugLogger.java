@@ -3,9 +3,7 @@ package com.worldpay;
 import android.util.Log;
 
 /**
- * Debugging utility
- *
- * @author Sotiris Chatzianagnostou - sotcha@arx.net
+ * Debugging utility.
  */
 final class DebugLogger {
     public static String tag = WorldPay.TAG;

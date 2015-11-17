@@ -7,8 +7,6 @@ import java.io.Serializable;
 
 /**
  * Contains error response from the server.
- *
- * @author Sotiris Chatzianagnostou - sotcha@arx.net
  */
 public class ResponseError implements Serializable {
     private static final long serialVersionUID = 6834532264115534663L;

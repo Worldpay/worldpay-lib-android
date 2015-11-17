@@ -21,63 +21,114 @@
 		worldpay.setReusable(true);
 		// set validation type advanced or basic
 		Card.setValidationType(Card.VALIDATION_TYPE_ADVANCED);
-		
 
-##Choose library-provided or create your custom card submission form
+## Choose library-provided or create your custom card submission form
 
+### Default Library-provided form
 
-
-###Default Library-provided form
-
-Developers can use **SaveCardActivity** of the library.
+    Developers can use **SaveCardActivity** of the library.
 
 
-1. Declare the activity in AndroidManifest.xml
+    1. Declare the activity in AndroidManifest.xml
 
-        <activity android:name="com.worldpay.SaveCardActivity"   android:label="Card Details" />
+            <activity android:name="com.worldpay.SaveCardActivity"   android:label="Card Details" />
 
-2. Open the activity :
+    2. Open the activity :
 
-         	Intent intent = new Intent(myactivity, SaveCardActivity.class);
-         	//SAVE_CARD_REQUEST_CODE a custom request code for that activity
-         	startActivityForResult(intent, SAVE_CARD_REQUEST_CODE);
- 
-3. Handle activity response implementing **Activity.onActivityResult(int, int, android.content.Intent)**.
-The developer can use Intent parameter from **Activity.onActivityResult(int, int, android.content.Intent)** to retrieve more information about the result.
+             	Intent intent = new Intent(myactivity, SaveCardActivity.class);
+             	//SAVE_CARD_REQUEST_CODE a custom request code for that activity
+             	startActivityForResult(intent, SAVE_CARD_REQUEST_CODE);
 
-###Custom form
+    3. Handle activity response implementing **Activity.onActivityResult(int, int, android.content.Intent)**.
+    The developer can use Intent parameter from **Activity.onActivityResult(int, int, android.content.Intent)** to retrieve more information about the result.
 
-1. Create a Card object, pass card details and validate it.
+### Custom form
 
-		Card card = new Card();
-		CardValidationError validate = card.setHolderName("John Newman").
-			setCardNumber("1234123412341234")
-			.setCvc("123").setExpriryMonth("12").setExpiryYear("2018")
-			.validate();
-			
-2. Use the Worldpay library to connect with Worldpay to store card details and create a token. This can be done by creating an AsyncTask and executing it. A callback interface should be implemented to handle the response.
+    1. Create a Card object, pass card details and validate it.
 
-		AsyncTask<Void, Void, HttpServerResponse> createTokenAsyncTask = worldpay.createTokenAsyncTask(this, card, new WorldpayResponse() {
+    		Card card = new Card();
+    		CardValidationError validate = card.setHolderName("John Newman")
+              .setCardNumber("1234123412341234")
+    		  .setCvc("123")
+              .setExpiryMonth("12")
+              .setExpiryYear("2018")
+    		.validate();
 
-			@Override
-			public void onSuccess(ResponseCard responseCard) {
-				//handle success
-			}
+    2. Use the Worldpay library to connect with Worldpay to store card details and create a token. This can be done by creating an AsyncTask and executing it. A callback interface should be implemented to handle the response.
 
-			@Override
-			public void onResponseError(ResponseError responseError) {
-				//handle error
-			}
+    		AsyncTask<Void, Void, HttpServerResponse> createTokenAsyncTask = worldpay.createTokenAsyncTask(this, card, new WorldpayResponse() {
 
-			@Override
-			public void onError(WorldpayError worldpayError) {
-				//handle error
-			}
+    			@Override
+    			public void onSuccess(ResponseCard responseCard) {
+    				//handle success
+    			}
 
-		});
+    			@Override
+    			public void onResponseError(ResponseError responseError) {
+    				//handle error
+    			}
 
-		if (createTokenAsyncTask != null) {
-			createTokenAsyncTask.execute();
-		}
+    			@Override
+    			public void onError(WorldpayError worldpayError) {
+    				//handle error
+    			}
+
+    		});
+
+    		if (createTokenAsyncTask != null) {
+    			createTokenAsyncTask.execute();
+    		}
+
+## Choose library-provided or create your custom APM submission form
 
 
+
+### Default Library-provided form
+
+    Developers can use **SaveAlternativePaymentMethodActivity** of the library.
+
+
+    1. Declare the activity in AndroidManifest.xml
+
+            <activity android:name="com.worldpay.SaveAlternativePaymentMethodActivity"   android:label="APM Details" />
+
+    2. Open the activity :
+
+             	Intent intent = new Intent(myactivity, SaveAlternativePaymentMethodActivity.class);
+             	//SAVE_APM_REQUEST_CODE a custom request code for that activity
+             	startActivityForResult(intent, SAVE_APM_REQUEST_CODE);
+
+    3. Handle activity response implementing **Activity.onActivityResult(int, int, android.content.Intent)**.
+    The developer can use Intent parameter from **Activity.onActivityResult(int, int, android.content.Intent)** to retrieve more information about the result.
+
+### Custom form
+
+    1. Create an AlternativePaymentMethod object and validate it.
+
+    		AlternativePaymentMethod apm = AlternativePaymentMethod.newPayPalApm("First Last", "GB");
+    		AlternativePaymentMethodValidationError validationError = apm.validate();
+
+    2. Use the Worldpay library to connect with Worldpay to store the APM and create a token. This can be done by creating an AsyncTask and executing it. A callback interface should be implemented to handle the response.
+
+    		AsyncTask<Void, Void, HttpServerResponse> createTokenAsyncTask = worldpay.createTokenAsyncTask(this, apm, new WorldPayApmResponse() {
+
+    			@Override
+    			public void onSuccess(AlternativePaymentMethodToken token) {
+    				//handle success
+    			}
+
+    			@Override
+    			public void onResponseError(ResponseError responseError) {
+    				//handle error
+    			}
+
+    			@Override
+    			public void onError(WorldpayError worldpayError) {
+    				//handle error
+    			}
+
+    		});
+
+    		if (createTokenAsyncTask != null) {
+    			createTokenAsyncTask.execute();
+    		}

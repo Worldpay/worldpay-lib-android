@@ -1,9 +1,39 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
     <CheckBoxPreference
         android:defaultValue="false"
         android:key="@string/three_ds_key"
-        android:title="3D Secure"/>
-
-
+        android:title="@string/three_ds_title" />
+    <EditTextPreference
+        android:key="@string/client_key"
+        android:defaultValue="@string/client_key_value"
+        android:title="@string/client_key_title" />
+    <EditTextPreference
+        android:key="@string/service_key"
+        android:defaultValue="@string/service_key_value"
+        android:title="@string/service_key_title" />
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="@string/dummy_address_key"
+        android:title="@string/dummy_address_title" />
+    <EditTextPreference
+        android:key="@string/paypal_redirect_url_key"
+        android:summary="@string/paypal_redirect_url_summary"
+        android:defaultValue="@string/paypal_redirect_url_value"
+        android:title="@string/paypal_redirect_url_title" />
+    <EditTextPreference
+        android:key="@string/paypal_pending_url_key"
+        android:summary="@string/paypal_pending_url_summary"
+        android:title="@string/paypal_pending_url_title" />
+    <EditTextPreference
+        android:key="@string/paypal_success_url_key"
+        android:summary="@string/paypal_success_url_summary"
+        android:title="@string/paypal_success_url_title" />
+    <EditTextPreference
+        android:key="@string/paypal_cancel_url_key"
+        android:summary="@string/paypal_cancel_url_summary"
+        android:title="@string/paypal_cancel_url_title" />
+    <EditTextPreference
+        android:key="@string/paypal_failure_url_key"
+        android:summary="@string/paypal_failure_url_summary"
+        android:title="@string/paypal_failure_url_title" />
 </PreferenceScreen>

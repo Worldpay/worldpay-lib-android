@@ -42,10 +42,7 @@ import java.util.ArrayList;
  * <li>{@link CardValidationError#ERROR_HOLDER_NAME}</li>
  * <li>{@link CardValidationError#ERROR_CARD_NUMBER}</li>
  * </ul>
- *
- * @author Sotiris Chatzianagnostou - sotcha@arx.net
  */
-
 public class CardValidationError {
     public final static int ERROR_CARD_EXPIRY = 2 << 1;
     public final static int ERROR_CVC = 2 << 2;

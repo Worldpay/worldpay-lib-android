@@ -1,31 +1,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/thank"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="15sp"
         android:layout_marginTop="15dp"
-        android:text="@string/thank" />
+        android:text="@string/thank"
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/order"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="15sp"
-        android:text="@string/order" />
+        android:paddingBottom="@dimen/padding_medium"
+        android:text="@string/order_completed"
+        android:textSize="15sp" />
 
     <ImageView
-        android:id="@+id/imageView1"
+        android:id="@+id/orderSuccessfulImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:contentDescription="@string/cd_order_successful"
         android:src="@drawable/check" />
 
     <TextView
@@ -33,33 +34,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="15sp"
         android:layout_marginTop="15dp"
-        android:text="@string/deliver" />
+        android:text="@string/deliver"
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/minutes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="15sp"
-        android:text="@string/minutes" />
+        android:paddingBottom="@dimen/padding_medium"
+        android:text="@string/minutes"
+        android:textSize="15sp" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/orderTimeImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:contentDescription="@string/cd_order_time"
         android:src="@drawable/clock" />
 
     <Button
         android:id="@+id/homeButton"
         android:layout_width="100dp"
         android:layout_height="30dp"
-        android:background="@drawable/roundshapebtn"
         android:layout_gravity="center"
-        android:textColor="#ffff"
         android:layout_marginTop="15dp"
-        android:text="Home" />
-
+        android:background="@drawable/roundshapebtn"
+        android:text="@string/home"
+        android:textColor="#ffff" />
 </LinearLayout>

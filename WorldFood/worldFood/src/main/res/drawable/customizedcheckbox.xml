@@ -2,5 +2,5 @@
      <selector  xmlns:android="http://schemas.android.com/apk/res/android">
      <item android:state_checked="false" android:drawable="@drawable/empty" />
      <item android:state_checked="true" android:drawable="@drawable/choose" />
-     <item android:drawable="@drawable/empty" /> <!-- default -->
+     <item android:drawable="@drawable/empty" />
 </selector>

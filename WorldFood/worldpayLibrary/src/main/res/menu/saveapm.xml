@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_save_apm"
+        android:actionViewClass="android.widget.Button"
+        android:showAsAction="always|withText"
+        android:title="Save APM"
+        android:visible="true"/>
+
+</menu>

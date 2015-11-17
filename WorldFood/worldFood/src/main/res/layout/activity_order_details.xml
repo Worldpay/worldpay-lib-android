@@ -1,5 +1,4 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ebebeb" >
@@ -57,7 +56,7 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerInParent="true"
                 android:layout_marginLeft="3dp"
-                android:textColor="#f01e14"
+                android:textColor="#000"
                 android:textSize="16sp" />
 
             <TextView
@@ -66,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:text="1"
-                android:textColor="#f01e14"
+                android:textColor="#000"
                 android:textSize="16sp" />
 
             <TextView
@@ -76,7 +75,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerInParent="true"
                 android:layout_marginRight="3dp"
-                android:textColor="#f01e14"
+                android:textColor="#000"
                 android:textSize="16sp" />
         </RelativeLayout>
 
@@ -121,7 +120,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
                 android:layout_below="@+id/addressEditText"
-                android:hint="@string/postCode" />
+                android:hint="@string/post_code" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -134,42 +133,64 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:text="@string/paymentMethod"
+                android:text="@string/payment_method"
                 android:textColor="#ffff"
                 android:textSize="16sp" />
         </RelativeLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="90dp"
+            android:gravity="center"
             android:background="#ebebeb" >
 
             <Button
                 android:id="@+id/addCardButton"
-                android:layout_width="100dp"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
+                android:layout_marginRight="@dimen/padding_medium"
                 android:background="@drawable/roundgrey"
                 android:clickable="true"
-                android:text="@string/addCardButton"
+                android:text="@string/add_card_button"
                 android:textColor="#ffff"
                 android:textSize="16sp" />
 
+            <Button
+                android:id="@+id/buyWithPayPalButton"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="@dimen/padding_medium"
+                android:background="@drawable/roundgrey"
+                android:clickable="true"
+                android:text="@string/paypal_button"
+                android:textColor="#ffff"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:background="#ebebeb" >
+
             <TextView
-                android:id="@+id/storedCard"
+                android:id="@+id/storedPaymentMethods"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="6dp"
-                android:text="@string/storedCard"
+                android:text="@string/stored_cards"
                 android:textColor="#919191" />
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/cardRelativeArea"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/padding_medium">
 
             <TableLayout
                 android:id="@+id/cardTable"
@@ -193,7 +214,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:background="@drawable/roundshapebtn"
-                android:text="@string/purchaseButton"
+                android:text="@string/purchase_button"
                 android:textColor="#ffff"
                 android:textSize="16sp" />
         </RelativeLayout>

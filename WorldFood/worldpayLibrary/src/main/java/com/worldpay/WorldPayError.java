@@ -3,13 +3,11 @@ package com.worldpay;
 import java.io.Serializable;
 
 /**
- * Contains library generic errors
- *
- * @author Sotiris Chatzianagnostou - sotcha@arx.net
+ * Contains library generic errors.
  */
 public class WorldPayError implements Serializable {
     /**
-     * Generic unxpected error
+     * Generic unexpected error
      */
     public final static int ERROR_LIBRARY_UNEXPECTED = 1;
     /**

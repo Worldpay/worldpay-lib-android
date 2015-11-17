@@ -132,7 +132,6 @@ import java.util.regex.Pattern;
  * </li>
  * </ul>
  */
-
 public class SaveCardActivity extends Activity implements OnClickListener {
 
     /**
@@ -276,8 +275,7 @@ public class SaveCardActivity extends Activity implements OnClickListener {
 
             int length = numberString.length();
 
-            if ((length == 5 || length == 10 || length == 15 || length == 20)
-                    && start != length && !numberString.endsWith(" ")) {
+            if ((length > 1 && length % 5 == 0) && start != length && !numberString.endsWith(" ")) {
 
                 cNumberText.setText(numberString.substring(0, length - 1) + " "
                         + numberString.subSequence(length - 1, length));
@@ -392,11 +390,15 @@ public class SaveCardActivity extends Activity implements OnClickListener {
         }
 
         ActionBar bar = getActionBar();
-        bar.setTitle(getString(R.string.cardDetails));
+        if (bar != null) {
+            bar.setTitle(getString(R.string.cardDetails));
+        }
 
         // action bar background
         if (theme != THEME_LIGHT) {
-            bar.setBackgroundDrawable(new ColorDrawable(theme));
+            if (bar != null) {
+                bar.setBackgroundDrawable(new ColorDrawable(theme));
+            }
         }
 
         setContentView(R.layout.save_on_card);
@@ -503,7 +505,7 @@ public class SaveCardActivity extends Activity implements OnClickListener {
 
         CardValidationError validate = card.setHolderName(name).//
                 setCardNumber(cNumber)//
-                .setCvc(cvc).setExpiryYear(expYear).setExpriryMonth(expMonth)//
+                .setCvc(cvc).setExpiryYear(expYear).setExpiryMonth(expMonth)//
                 .validate();
 
         Drawable errorIcon = getResources().getDrawable(R.drawable.rederror);
